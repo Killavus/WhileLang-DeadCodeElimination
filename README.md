@@ -17,7 +17,7 @@ It consists of following pieces:
 
 ## Requirements
 
-## Compilation
+## Installation 
 
 ## License
 
