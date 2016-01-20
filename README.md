@@ -20,3 +20,5 @@ It consists of following pieces:
 ## Compilation
 
 ## License
+
+MIT. See [LICENSE](LICENSE) file for details.
