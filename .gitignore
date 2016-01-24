@@ -1,3 +1,6 @@
 while_parser.mli
 while_parser.ml
 while_lexer.ml
+*.cmo
+*.cmi
+analysis

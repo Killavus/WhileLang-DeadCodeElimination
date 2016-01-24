@@ -5,9 +5,10 @@ type ('a, 'b) either = Left of 'a | Right of 'b;;
 (* Elementary Blocks Set - effectively a graph representation *)
 module EBSet = Map.Make(struct type t = int let compare = compare end);;
 
+(* Data Flow Node. *)
 type data_flow_tree = {
   content : (stmt, bool_expr) either;
-  children: data_flow_tree list;
+  children: EBSet.key list;
 };;
 
 let link_df ebs links cur =
@@ -17,37 +18,6 @@ let link_df ebs links cur =
         EBSet.add link { dfn with children = (cur::dfn.children) } ebs_
   ) ebs links;;
 
-let build_while b ws ebs links next_cur =
-  let ebsm = link_df ebs links next_cur in
-    let (ebsf, wlinks, wncur) = build_df ws esbm [next_cur] (next_cur + 1) in
-      if wncur > (next_cur + 1) then
-        let last_node = EBSet.find (wncur - 1) esbf in
-        let tied_knot_ebsf = 
-          EBSet.add (wncur - 1) { last_node with children = (last_node.children @ [cur]) } in
-        let bool_node = { content = Right b; children = [next_cur + 1] } in
-        (EBSet.add next_cur bool_node tied_knot_ebsf, [next_cur], wncur)
-      else
-        (EBSet.add next_cur bool_node ebsf, [next_cur], next_cur + 1);;
-
-let build_if b ts fs ebs links next_cur =
-  let ebsm = link_df ebs links next_cur in
-  let (tsebsm, tslinks, tscur) = build_df ts esbm [next_cur] (next_cur + 1) in
-  let (fsebsm, fslinks, fscur) = build_df fs tsebsm [next_cur] tscur in
-    if tscur > (next_cur + 1) then
-      if fscur > tscur then
-        let new_node = { content = Right b; children = [next_cur + 1; tscur] } in
-        (EBSet.add next_cur new_node fsebsm, [tscur - 1; fscur - 1], fscur)
-      else
-        let new_node = { content = Right b; children = [next_cur + 1] } in
-        (EBSet.add next_cur new_node fsebsm, [next_cur; tscur - 1], fscur)
-    else
-      if fscur > tscur then
-        let new_node = { content = Right b; children = [next_cur + 1] } in
-        (EBSet.add next_cur new_node fsebsm, [next_cur; fscur - 1], fscur)
-      else
-        let new_node = { content = Right b; children = [] } in
-        (EBSet.add next_cur new_node fsebsm, [next_cur], fscur);; 
-
 let rec build_df ast ebs links next_cur =
   match ast with
   | SkipStmt -> (ebs, links, next_cur)
@@ -55,12 +25,42 @@ let rec build_df ast ebs links next_cur =
     let (s1ebs, s1links, s1ncur) = build_df s1 ebs links next_cur in
     build_df s2 s1ebs s1links s1ncur 
   | WhileStmt (b, ws) ->
-    build_while b ws ebs links next_cur
+      let ebsm = link_df ebs links next_cur in
+      let bool_node = { content = Right b; children = [] } in
+      let ebsmb = EBSet.add next_cur bool_node ebsm in 
+      let (ebsfb, wlinks, wncur) = build_df ws ebsmb [next_cur] (next_cur + 1) in
+        if wncur > (next_cur + 1) then
+          let last_node = EBSet.find (wncur - 1) ebsfb in
+          let tied_knot_ebsfb = 
+          EBSet.add (wncur - 1) { last_node with 
+            children = (last_node.children @ [next_cur]) } ebsfb in
+          (tied_knot_ebsfb, [next_cur], wncur)
+        else
+          (ebsfb, [next_cur], next_cur + 1)
   | IfStmt (b, ts, fs) ->
-    build_if b ts fs ebs links next_cur
+      let new_node = { content = Right b; children = [] } in
+      let ebsb = EBSet.add next_cur new_node ebs in
+      let ebsmb = link_df ebsb links next_cur in
+      let (tsebsmb, tslinks, tscur) = 
+        build_df ts ebsmb [next_cur] (next_cur + 1) in
+      let (fsebsmb, fslinks, fscur) = build_df fs tsebsmb [next_cur] tscur in
+        if tscur > (next_cur + 1) then
+          if fscur > tscur then
+            (* Assignments on both paths *)
+            (fsebsmb, [tscur - 1; fscur - 1], fscur)
+          else
+            (* Assignments only on true path *)
+            (fsebsmb, [next_cur; tscur - 1], fscur)
+        else
+          if fscur > tscur then
+            (* Assignments only on false path *)
+            (fsebsmb, [next_cur; fscur - 1], fscur)
+          else
+            (* No assignments on both true/false path. *)
+            (fsebsmb, [next_cur], fscur)
   | asgn ->
-      let ebsm = link_df ebs links cur in
-      EBSet.add next_cur { content = Left asgn; children = [] } ebsm;;
+      let ebsm = link_df ebs links next_cur in
+      (EBSet.add next_cur { content = Left asgn; children = [] } ebsm, [next_cur], next_cur + 1);;
 
-let build_data_flow_tree ast = build_df ast EBSet.empty [] 0;;
+let build_data_flow_tree ast = build_df ast (EBSet.empty) [] 0;;
 

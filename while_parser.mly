@@ -17,15 +17,17 @@
 %left ARITHOP_PLUS ARITHOP_MINUS LOGOP_AND
 %left ARITHOP_MULT ARITHOP_DIV LOGOP_OR
 
+%right ELSE DO
+
 %right SEMICOL
 
 %start prog
-%type <stmt> prog
-%type <stmt> stm
-%type <stmt> while_stm
-%type <stmt> if_stm
-%type <bool_expr> bool_exp
-%type <arith_expr> arith_exp
+%type <While_ast.stmt> prog
+%type <While_ast.stmt> stm
+%type <While_ast.stmt> while_stm
+%type <While_ast.stmt> if_stm
+%type <While_ast.bool_expr> bool_exp
+%type <While_ast.arith_expr> arith_exp
 
 %%
 
@@ -33,9 +35,11 @@ prog:
  | stm EOF { $1 }
  | EOF { SkipStmt }
 
-stm:
-  | if_stm; prog { CompStmt ($1, $2) }
-  | while_stm; prog { CompStmt ($1, $2) }
+ stm:
+  | if_stm; stm { CompStmt ($1, $2) }
+  | while_stm; stm { CompStmt ($1, $2) }
+  | while_stm { $1 }
+  | if_stm { $1 }
   | stm; SEMICOL; stm { CompStmt ($1, $3) }
   | IDENT; ASSIGN; arith_exp { AssignStmt ($1, $3) }
   | SKIP { SkipStmt }
