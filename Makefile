@@ -1,6 +1,6 @@
-CC = opam config exec -- ocamlc
-LEXGEN = opam config exec -- ocamllex
-PARGEN = opam config exec -- ocamlyacc
+CC = ocamlc
+LEXGEN = ocamllex
+PARGEN = ocamlyacc
 
 OBJEXT = cmo
 INTEXT = cmi
@@ -11,6 +11,7 @@ OBJ = while_ast.$(OBJEXT) \
 			while_parser.$(OBJEXT) \
 			while_lexer.$(OBJEXT) \
 			data_flow.$(OBJEXT) \
+			lv_analysis.$(OBJEXT) \
 			main.$(OBJEXT)
 
 prog: $(OBJ)

@@ -1,9 +1,3 @@
-#mod_use "while_ast.ml";;
-#mod_use "while_parser.ml";;
-#mod_use "while_lexer.ml";;
-#mod_use "data_flow.ml";;
-#mod_use "lv_analysis.ml";;
-
 open Data_flow;;
 open Lv_analysis;;
 

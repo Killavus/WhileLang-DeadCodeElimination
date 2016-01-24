@@ -17,7 +17,13 @@ It consists of following pieces:
 
 ## Requirements
 
+You need to have ocamlc, ocamlyacc, ocamllex.
+
 ## Installation 
+
+```
+make
+```
 
 ## License
 
