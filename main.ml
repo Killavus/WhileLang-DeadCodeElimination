@@ -12,5 +12,4 @@ let main argv argc =
   let lexer_buffer = Lexing.from_channel input_file in
   let ast = While_parser.prog While_lexer.read lexer_buffer in 
   let (dfg, max_lab) = build_data_flow_graph ast in
-  let idfg = inverse_data_flow_graph dfg max_lab in
-  (idfg, final_set dfg max_lab);;
+  perform dfg max_lab;;

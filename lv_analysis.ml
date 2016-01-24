@@ -82,3 +82,32 @@ let final_set dfg max_lab =
       match List.filter (fun chl -> chl > lab) node.children with
       | [] -> LabelSet.add lab finalset
       | _ -> finalset) LabelSet.empty (range (max_lab - 1));;
+
+module CIMap = Map.Make(struct type t = EBSet.key let compare = compare end);;
+
+let start_point max_lab = 
+  List.fold_left (fun m n -> CIMap.add n (IdentSet.empty, IdentSet.empty) m) CIMap.empty (range (max_lab - 1));;
+
+let lv_iterate idfg final_set max_lab f cmap =
+  let ncmap = List.fold_left (fun m n ->
+    let (entry, exit) = CIMap.find n m in
+    let node = EBSet.find n idfg in
+    let nentry = IdentSet.union (IdentSet.diff exit (kill node)) (gen node) in
+    let nexit = 
+      if LabelSet.mem n final_set then 
+        IdentSet.empty 
+      else 
+        List.fold_left (fun s l -> IdentSet.union s (fst (CIMap.find l m))) IdentSet.empty node.children
+    in CIMap.add n (nentry, nexit) m) cmap (range (max_lab - 1)) 
+  in 
+    if (CIMap.equal (fun a b -> 
+          let (ae, ax) = a in let (be, bx) = b in IdentSet.equal ae be && IdentSet.equal ax bx) cmap ncmap) then 
+            (fun x -> x) cmap else f ncmap;;
+
+let rec fix f x = f (fix f) x;;
+
+let perform dfg max_lab =
+  let sp = start_point max_lab in
+  let idfg = inverse_data_flow_graph dfg max_lab in
+  let fset = final_set idfg max_lab in
+  fix (lv_iterate idfg fset max_lab) sp;;
