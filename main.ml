@@ -10,5 +10,3 @@ let main argv argc =
   let lexer_buffer = Lexing.from_channel input_file in
   let ast = While_parser.prog While_lexer.read lexer_buffer in 
     (ast, build_data_flow_tree ast);;
-
-main () ();;
