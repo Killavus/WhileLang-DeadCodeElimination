@@ -24,7 +24,7 @@ let rec build_df ast ebs links next_cur =
   | CompStmt (s1, s2) ->
     let (s1ebs, s1links, s1ncur) = build_df s1 ebs links next_cur in
     build_df s2 s1ebs s1links s1ncur 
-  | WhileStmt (b, ws) ->
+  | WhileStmt (b, ws) ->      
       let ebsm = link_df ebs links next_cur in
       let bool_node = { content = Right b; children = [] } in
       let ebsmb = EBSet.add next_cur bool_node ebsm in 
@@ -47,14 +47,15 @@ let rec build_df ast ebs links next_cur =
         if tscur > (next_cur + 1) then
           if fscur > tscur then
             (* Assignments on both paths *)
-            (fsebsmb, [tscur - 1; fscur - 1], fscur)
+            (print_endline (string_of_int fscur);
+            (fsebsmb, tslinks @ fslinks, fscur))
           else
             (* Assignments only on true path *)
-            (fsebsmb, [next_cur; tscur - 1], fscur)
+            (fsebsmb, [next_cur] @ tslinks, fscur)
         else
           if fscur > tscur then
             (* Assignments only on false path *)
-            (fsebsmb, [next_cur; fscur - 1], fscur)
+            (fsebsmb, [next_cur] @ fslinks, fscur)
           else
             (* No assignments on both true/false path. *)
             (fsebsmb, [next_cur], fscur)

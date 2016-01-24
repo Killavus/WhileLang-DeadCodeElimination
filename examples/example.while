@@ -4,12 +4,13 @@ r := 1;
 if n < 1 then
   n := 1; 
   while n < 3 do
-    n := n + 1 
-  if n = 3 then
+    n := n + 1
+  if not n = 3 then
+    skip
+  else
     n := 4
-  else skip
 else
-  skip;
+  skip
 
 while n > 1 do
   r := n * r;
