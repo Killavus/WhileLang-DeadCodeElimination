@@ -53,7 +53,7 @@ while_stm:
 bool_exp:
   | LPAREN; bool_exp_without_ident; RPAREN { $2 }
   | bool_exp_without_ident { $1 }
-  | IDENT { Ident $1 }
+  | IDENT { BIdent $1 }
 
 bool_exp_without_ident:
   | arith_exp; RELOP_EQ; arith_exp { RelOp (Equal, $1, $3) }
@@ -64,17 +64,17 @@ bool_exp_without_ident:
   | bool_exp; LOGOP_AND; bool_exp { BoolOp (And, $1, $3) }
   | bool_exp; LOGOP_OR; bool_exp { BoolOp (Or, $1, $3) }
   | LOG_NEG; bool_exp { Neg $2 }
-  | TRUE { Const true }
-  | FALSE { Const false };
+  | TRUE { BConst true }
+  | FALSE { BConst false };
 
 arith_exp:
   | LPAREN; arith_exp_without_ident; RPAREN { $2 }
   | arith_exp_without_ident { $1 }
-  | IDENT { Ident $1 }
+  | IDENT { AIdent $1 }
 
 arith_exp_without_ident:
   | arith_exp; ARITHOP_PLUS; arith_exp { Op (Add, $1, $3) }
   | arith_exp; ARITHOP_MINUS; arith_exp { Op (Sub, $1, $3) }
   | arith_exp; ARITHOP_MULT; arith_exp { Op (Mult, $1, $3) }
   | arith_exp; ARITHOP_DIV; arith_exp { Op (Div, $1, $3) }
-  | INT { Const $1 }  
+  | INT { AConst $1 }  

@@ -5,13 +5,13 @@ type arith_type = Add | Sub | Div | Mult;;
 type rel_type = LessThan | LessThanEq | GreaterThan | GreaterThanEq | Equal;;
 
 type arith_expr =
-    Const of int |
-    Ident of ident |
+    AConst of int |
+    AIdent of ident |
     Op of (arith_type * arith_expr * arith_expr);;
 
 type bool_expr =
-    Const of bool |
-    Ident of ident |
+    BConst of bool |
+    BIdent of ident |
     Neg of bool_expr |
     RelOp of (rel_type * arith_expr * arith_expr) |
     BoolOp of (bool_type * bool_expr * bool_expr);;

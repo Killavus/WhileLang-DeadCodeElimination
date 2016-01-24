@@ -6,7 +6,7 @@ type ('a, 'b) either = Left of 'a | Right of 'b;;
 module EBSet = Map.Make(struct type t = int let compare = compare end);;
 
 (* Data Flow Node. *)
-type data_flow_tree = {
+type data_flow_graph = {
   content : (stmt, bool_expr) either;
   children: EBSet.key list;
 };;
@@ -63,5 +63,6 @@ let rec build_df ast ebs links next_cur =
       let ebsm = link_df ebs links next_cur in
       (EBSet.add next_cur { content = Left asgn; children = [] } ebsm, [next_cur], next_cur + 1);;
 
-let build_data_flow_tree ast = build_df ast (EBSet.empty) [] 0;;
-
+let build_data_flow_graph ast = 
+  let (graph, _, max_lab) = build_df ast (EBSet.empty) [] 0 in
+    (graph, max_lab);;
