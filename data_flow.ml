@@ -47,8 +47,7 @@ let rec build_df ast ebs links next_cur =
         if tscur > (next_cur + 1) then
           if fscur > tscur then
             (* Assignments on both paths *)
-            (print_endline (string_of_int fscur);
-            (fsebsmb, tslinks @ fslinks, fscur))
+            (fsebsmb, tslinks @ fslinks, fscur)
           else
             (* Assignments only on true path *)
             (fsebsmb, [next_cur] @ tslinks, fscur)

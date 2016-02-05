@@ -1,17 +1,8 @@
-n := 10; 
-r := 1;
-
-if n < 1 then
-  n := 1; 
-  while n < 3 do
-    n := n + 1
-  if not n = 3 then
-    skip
-  else
-    n := 4
+x := 2;
+y := 4;
+x := 1;
+if y > x then
+  z := y
 else
-  skip
-
-while n > 1 do
-  r := n * r;
-  n := n - 1
+  z := y * y
+x := z
