@@ -31,7 +31,7 @@ let genc c =
   | Right bexpr -> free_variables_bexpr bexpr
   | Left stmt ->
     (match stmt with
-     | AssignStmt (_, aexpr) -> free_variables_aexpr aexpr
+     | AssignStmt (_, aexpr, _) -> free_variables_aexpr aexpr
      | _ -> IdentSet.empty
     );;
 
@@ -40,7 +40,7 @@ let killc c =
   | Right _ -> IdentSet.empty
   | Left stmt ->
       (match stmt with
-       | AssignStmt (x, _) -> IdentSet.singleton x
+       | AssignStmt (x, _, _) -> IdentSet.singleton x
        | _ -> IdentSet.empty);;
 
 let gen dfn =

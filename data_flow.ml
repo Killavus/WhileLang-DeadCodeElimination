@@ -20,11 +20,11 @@ let link_df ebs links cur =
 
 let rec build_df ast ebs links next_cur =
   match ast with
-  | SkipStmt -> (ebs, links, next_cur)
-  | CompStmt (s1, s2) ->
+  | SkipStmt _ -> (ebs, links, next_cur)
+  | CompStmt (s1, s2, _) ->
     let (s1ebs, s1links, s1ncur) = build_df s1 ebs links next_cur in
     build_df s2 s1ebs s1links s1ncur 
-  | WhileStmt (b, ws) ->      
+  | WhileStmt (b, ws, _) ->      
       let ebsm = link_df ebs links next_cur in
       let bool_node = { content = Right b; children = [] } in
       let ebsmb = EBSet.add next_cur bool_node ebsm in 
@@ -37,7 +37,7 @@ let rec build_df ast ebs links next_cur =
           (tied_knot_ebsfb, [next_cur], wncur)
         else
           (ebsfb, [next_cur], next_cur + 1)
-  | IfStmt (b, ts, fs) ->
+  | IfStmt (b, ts, fs, _) ->
       let new_node = { content = Right b; children = [] } in
       let ebsb = EBSet.add next_cur new_node ebs in
       let ebsmb = link_df ebsb links next_cur in

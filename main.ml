@@ -40,3 +40,4 @@ let main argv argc =
   let lv_analysis = perform dfg max_lab in
     debug_lv lv_analysis max_lab;
     debug_dfg dfg max_lab;
+    ast;;

@@ -1,4 +1,9 @@
-%{ open While_ast %}
+%{ open While_ast;;
+   let next_id = ref 0;;
+   let id () = let res = !next_id in
+                 next_id := !next_id + 1;
+                 res;; 
+%}
 
 %token <int> INT
 %token <string> IDENT
@@ -33,22 +38,22 @@
 
 prog:
  | stm EOF { $1 }
- | EOF { SkipStmt }
+ | EOF { SkipStmt (id()) }
 
  stm:
-  | if_stm; stm { CompStmt ($1, $2) }
-  | while_stm; stm { CompStmt ($1, $2) }
+  | if_stm; stm { CompStmt ($1, $2, id()) }
+  | while_stm; stm { CompStmt ($1, $2, id()) }
   | while_stm { $1 }
   | if_stm { $1 }
-  | stm; SEMICOL; stm { CompStmt ($1, $3) }
-  | IDENT; ASSIGN; arith_exp { AssignStmt ($1, $3) }
-  | SKIP { SkipStmt }
+  | stm; SEMICOL; stm { CompStmt ($1, $3, id()) }
+  | IDENT; ASSIGN; arith_exp { AssignStmt ($1, $3, id()) }
+  | SKIP { SkipStmt (id()) }
 
 if_stm:
-  | IF; bool_exp; THEN; stm; ELSE; stm { IfStmt ($2, $4, $6) }
+  | IF; bool_exp; THEN; stm; ELSE; stm { IfStmt ($2, $4, $6, id()) }
 
 while_stm:
-  | WHILE; bool_exp; DO; stm { WhileStmt ($2, $4) }    
+  | WHILE; bool_exp; DO; stm { WhileStmt ($2, $4, id()) }    
 
 bool_exp:
   | LPAREN; bool_exp_without_ident; RPAREN { $2 }
@@ -77,4 +82,4 @@ arith_exp_without_ident:
   | arith_exp; ARITHOP_MINUS; arith_exp { Op (Sub, $1, $3) }
   | arith_exp; ARITHOP_MULT; arith_exp { Op (Mult, $1, $3) }
   | arith_exp; ARITHOP_DIV; arith_exp { Op (Div, $1, $3) }
-  | INT { AConst $1 }  
+  | INT { AConst $1 } 
