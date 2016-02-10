@@ -60,13 +60,18 @@ let rec unparse_stmt stmt level =
       indentate level ^ id ^ " := " ^ unparse_aexpr aexpr
   | SkipStmt (_) -> "skip"
   | CompStmt (stmt1, stmt2, _) ->
-      let needs_semicol = (match stmt1 with
-                           | IfStmt _ -> false
-                           | WhileStmt _ -> false
-                           | _ -> true) in
+      let needs_semicol_s1 = (match stmt1 with
+                              | IfStmt _ -> false
+                              | WhileStmt _ -> false
+                              | DeadExpr -> false
+                              | _ -> true) and
+          needs_semicol_s2 = (match stmt2 with
+                              | DeadExpr -> false
+                              | _ -> true) in
       indentate level ^ unparse_stmt stmt1 level ^ 
-      (if needs_semicol then ";\n" else "") ^
+      (if needs_semicol_s1 && needs_semicol_s2 then ";\n" else "") ^
       indentate level ^
-      unparse_stmt stmt2 level;;
+      unparse_stmt stmt2 level
+  | DeadExpr -> "";;
 
 let unparse ast = unparse_stmt ast 0;;

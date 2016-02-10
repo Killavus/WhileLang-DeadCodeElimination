@@ -22,4 +22,5 @@ type stmt =
     WhileStmt of (bool_expr * stmt * stmt_ident) |
     CompStmt of (stmt * stmt * stmt_ident) |
     AssignStmt of (ident * arith_expr * stmt_ident) |
+    DeadExpr |
     SkipStmt of stmt_ident;;

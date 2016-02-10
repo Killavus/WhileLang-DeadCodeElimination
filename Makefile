@@ -12,6 +12,7 @@ OBJ = while_ast.$(OBJEXT) \
 			while_lexer.$(OBJEXT) \
 			data_flow.$(OBJEXT) \
 			lv_analysis.$(OBJEXT) \
+			unparser.$(OBJEXT) \
 			main.$(OBJEXT)
 
 prog: $(OBJ)

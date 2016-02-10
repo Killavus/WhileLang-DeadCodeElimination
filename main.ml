@@ -50,5 +50,6 @@ let main argv argc =
     debug_dfg dfg max_lab;
     let unparsed_ast = unparse ast in
       let ast_ = While_parser.prog While_lexer.read (Lexing.from_string unparsed_ast) in
-      ast = ast_;; 
+      print_string (string_of_bool (ast = ast_));; 
 
+main () ();;

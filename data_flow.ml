@@ -21,6 +21,7 @@ let link_df ebs links cur =
 let rec build_df ast ebs links next_cur =
   match ast with
   | SkipStmt _ -> (ebs, links, next_cur)
+  | DeadExpr -> (ebs, links, next_cur)
   | CompStmt (s1, s2, _) ->
     let (s1ebs, s1links, s1ncur) = build_df s1 ebs links next_cur in
     build_df s2 s1ebs s1links s1ncur 
