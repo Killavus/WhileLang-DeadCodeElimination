@@ -3,6 +3,8 @@
    let id () = let res = !next_id in
                  next_id := !next_id + 1;
                  res;; 
+
+   let reset () = next_id := 0;;
 %}
 
 %token <int> INT
@@ -37,8 +39,8 @@
 %%
 
 prog:
- | stm EOF { $1 }
- | EOF { SkipStmt (id()) }
+ | stm EOF { let res = $1 in reset(); res }
+ | EOF { let res = SkipStmt (id()) in reset(); res }
 
  stm:
   | if_stm; stm { CompStmt ($1, $2, id()) }

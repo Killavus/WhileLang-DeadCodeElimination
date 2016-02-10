@@ -3,9 +3,11 @@
 #mod_use "while_lexer.ml";;
 #mod_use "data_flow.ml";;
 #mod_use "lv_analysis.ml";;
+#mod_use "unparser.ml";;
 
 open Data_flow;;
 open Lv_analysis;;
+open Unparser;;
 
 let debug_lv lv_analysis max_lab = 
     print_endline "Live Variables analysis results: ";
@@ -32,12 +34,21 @@ let debug_dfg dfg max_lab =
     print_children (EBSet.find n dfg).children;
     print_newline()) (range (max_lab-1));;
 
+let input_fname =
+  if Array.length Sys.argv > 1 then
+    Sys.argv.(1)
+  else
+    "examples/example.while";;
+
 let main argv argc =
-  let input_file = open_in "examples/example.while" in
+  let input_file = open_in input_fname in
   let lexer_buffer = Lexing.from_channel input_file in
   let ast = While_parser.prog While_lexer.read lexer_buffer in 
   let (dfg, max_lab) = build_data_flow_graph ast in
   let lv_analysis = perform dfg max_lab in
     debug_lv lv_analysis max_lab;
     debug_dfg dfg max_lab;
-    ast;;
+    let unparsed_ast = unparse ast in
+      let ast_ = While_parser.prog While_lexer.read (Lexing.from_string unparsed_ast) in
+      ast = ast_;; 
+
