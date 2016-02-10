@@ -1,4 +1,5 @@
 open While_ast;;
+open Utils;;
 
 let rec unparse_aexpr aexpr =
   match aexpr with
@@ -31,14 +32,6 @@ let rec unparse_bexpr bexpr =
                   | And -> " and "
                   | Or -> " or ") in
       unparse_bexpr bexpr_l ^ oper ^ unparse_bexpr bexpr_r;;
-
-let repeat a n =
-  let rec repeat_ a n acc =
-    if n == 0 then 
-      acc
-    else
-      repeat_ a (n-1) (a::acc)
-  in repeat_ a n [];;
 
 let indentate indent =
   List.fold_right (^) (repeat "\t" indent) "";;

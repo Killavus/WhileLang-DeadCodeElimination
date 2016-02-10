@@ -1,5 +1,6 @@
 open Data_flow;;
 open While_ast;;
+open Utils;;
 
 module IdentSet = Set.Make(struct type t = ident let compare = compare end);;
 module LabelSet = Set.Make(struct type t = EBSet.key let compare = compare end);;
@@ -51,14 +52,6 @@ let kill dfn =
   match dfn with
   | { content = c ; children = _ } -> killc c;;
 
-let range n =
-  let rec range_ n acc =
-    if n = -1 then
-      acc
-    else 
-      range_ (n-1) (n::acc)
-  in range_ n [];;
-
 let final_set dfg max_lab = 
   List.fold_left (fun finalset lab ->
     let node = EBSet.find lab dfg in
@@ -97,8 +90,6 @@ let lv_iterate idfg final_set max_lab f cmap =
   in 
     if (CIMap.equal ci_converged cmap ncmap) then ncmap
     else f ncmap;;
-
-let rec fix f x = f (fix f) x;;
 
 let perform dfg max_lab =
   let sp = start_point max_lab in
