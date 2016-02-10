@@ -12,7 +12,6 @@ type arith_expr =
 
 type bool_expr =
     BConst of bool |
-    BIdent of ident |
     Neg of bool_expr |
     RelOp of (rel_type * arith_expr * arith_expr) |
     BoolOp of (bool_type * bool_expr * bool_expr);;

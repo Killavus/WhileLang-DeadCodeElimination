@@ -18,7 +18,6 @@ let free_variables_bexpr expr =
     match expr with
     | BConst _ -> s
     | Neg nexpr -> compute nexpr s
-    | BIdent x -> IdentSet.add x s
     | RelOp (_, a1, a2) ->
         let lh = free_variables_aexpr a1 in 
         let rh = free_variables_aexpr a2 in
@@ -94,5 +93,4 @@ let lv_iterate idfg final_set max_lab f cmap =
 let perform dfg max_lab =
   let sp = start_point max_lab in
   let fset = final_set dfg max_lab in
-  LabelSet.iter (fun x -> print_endline (string_of_int x)) fset;
   fix (lv_iterate dfg fset max_lab) sp;;

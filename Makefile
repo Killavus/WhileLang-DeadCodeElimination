@@ -8,12 +8,13 @@ INTEXT = cmi
 FLAGS = -g
 
 OBJ = while_ast.$(OBJEXT) \
+			utils.$(OBJEXT) \
 			while_parser.$(OBJEXT) \
 			while_lexer.$(OBJEXT) \
 			data_flow.$(OBJEXT) \
 			lv_analysis.$(OBJEXT) \
 			unparser.$(OBJEXT) \
-			utils.$(OBJEXT) \
+			elimination.$(OBJEXT) \
 			main.$(OBJEXT)
 
 prog: $(OBJ)

@@ -58,11 +58,6 @@ while_stm:
   | WHILE; bool_exp; DO; stm { WhileStmt ($2, $4, id()) }    
 
 bool_exp:
-  | LPAREN; bool_exp_without_ident; RPAREN { $2 }
-  | bool_exp_without_ident { $1 }
-  | IDENT { BIdent $1 }
-
-bool_exp_without_ident:
   | arith_exp; RELOP_EQ; arith_exp { RelOp (Equal, $1, $3) }
   | arith_exp; RELOP_LT; arith_exp { RelOp (LessThan, $1, $3) }
   | arith_exp; RELOP_LTE; arith_exp { RelOp (LessThanEq, $1, $3) }
